@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hardened-nginx-html
+  namespace: hardened-nginx
+  labels:
+    app.kubernetes.io/name: hardened-nginx
+    app.kubernetes.io/instance: hardened-nginx
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: hardened-nginx
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+      <head><title>hardened-nginx</title></head>
+      <body>
+        <h1>hardened-nginx</h1>
+        <p>Served from a read-only root filesystem.</p>
+      </body>
+    </html>

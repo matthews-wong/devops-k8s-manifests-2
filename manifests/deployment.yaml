@@ -74,6 +74,9 @@ spec:
               mountPath: /var/cache/nginx
             - name: run
               mountPath: /var/run
+            - name: html
+              mountPath: /usr/share/nginx/html
+              readOnly: true
       volumes:
         - name: tmp
           emptyDir: {}
@@ -81,3 +84,6 @@ spec:
           emptyDir: {}
         - name: run
           emptyDir: {}
+        - name: html
+          configMap:
+            name: hardened-nginx-html
