@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hardened-nginx
+  labels:
+    app.kubernetes.io/name: hardened-nginx
+    app.kubernetes.io/part-of: hardened-nginx
