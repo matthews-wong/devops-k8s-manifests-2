@@ -1,0 +1,16 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: hardened-nginx
+  namespace: hardened-nginx
+  labels:
+    app.kubernetes.io/name: hardened-nginx
+    app.kubernetes.io/instance: hardened-nginx
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: hardened-nginx
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hardened-nginx
+      app.kubernetes.io/instance: hardened-nginx
