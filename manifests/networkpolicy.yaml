@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: hardened-nginx
+  namespace: hardened-nginx
+  labels:
+    app.kubernetes.io/name: hardened-nginx
+    app.kubernetes.io/instance: hardened-nginx
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: hardened-nginx
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: hardened-nginx
+      app.kubernetes.io/instance: hardened-nginx
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 8080
