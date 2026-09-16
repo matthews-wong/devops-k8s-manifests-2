@@ -24,4 +24,12 @@ kubectl apply -f manifests/ -n hardened-nginx
 ## Validation
 
 This repo has no live cluster to apply against, so manifests are checked
-statically instead. See the validation section below as the tooling lands.
+statically with [kubeconform](https://github.com/yannh/kubeconform) instead:
+
+```sh
+./scripts/validate.sh
+```
+
+The script downloads a pinned, checksum-verified kubeconform release into
+`~/.cache` on first run and reuses it (or an already-installed `kubeconform`
+on `PATH`) afterwards.
