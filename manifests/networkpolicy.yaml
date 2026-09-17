@@ -15,9 +15,18 @@ spec:
       app.kubernetes.io/instance: hardened-nginx
   policyTypes:
     - Ingress
+    - Egress
   ingress:
     - from:
         - namespaceSelector: {}
       ports:
         - protocol: TCP
           port: 8080
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
