@@ -24,6 +24,8 @@ spec:
         app.kubernetes.io/component: web
         app.kubernetes.io/part-of: hardened-nginx
     spec:
+      serviceAccountName: hardened-nginx
+      automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 101
