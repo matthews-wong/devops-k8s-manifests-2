@@ -11,11 +11,15 @@ couple of minutes, tied together with a single `kustomization.yaml`.
 ## What's here
 
 - `manifests/namespace.yaml` - a dedicated namespace for the app
+- `manifests/serviceaccount.yaml` - a dedicated, non-token-mounting ServiceAccount
 - `manifests/deployment.yaml` - the nginx workload
 - `manifests/service.yaml` - a ClusterIP service in front of it
 - `manifests/configmap.yaml` - the static page it serves
 - `manifests/poddisruptionbudget.yaml` - a floor on availability during drains
-- `manifests/networkpolicy.yaml` - default-deny ingress except on the app port
+- `manifests/networkpolicy.yaml` - default-deny ingress/egress except the app port and DNS
+- `manifests/hpa.yaml` - scales replicas on CPU utilization
+- `manifests/resourcequota.yaml` - namespace-wide compute and pod-count ceilings
+- `manifests/limitrange.yaml` - per-container defaults and min/max bounds
 - `manifests/kustomization.yaml` - ties the above into one applyable set
 
 ## Usage
@@ -36,6 +40,21 @@ kubectl apply -k manifests/
 - **NetworkPolicy scopes ingress to the container port**, not to specific
   namespaces, since this manifest set doesn't know what else shares the
   cluster it's applied to; tighten the `from` selector per-environment.
+  Egress is default-deny except DNS, since a static page server never needs
+  to call out.
+- **ServiceAccount token automount is disabled**, both on the account and
+  the pod, since this workload never talks to the API server - one less
+  credential sitting in every pod's filesystem.
+- **Anti-affinity is `preferred`, not `required`.** A hard rule would refuse
+  to schedule a second replica on a single-node dev/test cluster; the soft
+  rule still asks the scheduler to spread when it can.
+- **A 5s `preStop` sleep before nginx receives SIGTERM.** Without it, kubelet
+  can terminate the container before kube-proxy has finished removing it
+  from the Service's endpoints, dropping in-flight requests during a
+  rollout or scale-down.
+- **HPA min/max and the ResourceQuota agree with each other.** The quota is
+  sized against the HPA's 6-replica ceiling plus rollout headroom, so
+  autoscaling can't silently hit a quota wall it doesn't know about.
 
 ## Validation
 
@@ -48,4 +67,5 @@ statically with [kubeconform](https://github.com/yannh/kubeconform) instead:
 
 The script downloads a pinned, checksum-verified kubeconform release into
 `~/.cache` on first run and reuses it (or an already-installed `kubeconform`
-on `PATH`) afterwards.
+on `PATH`) afterwards. A GitHub Actions workflow runs the same script on
+every push and pull request against `main`.
