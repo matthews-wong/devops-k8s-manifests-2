@@ -9,3 +9,4 @@ resources:
   - poddisruptionbudget.yaml
   - networkpolicy.yaml
   - hpa.yaml
+  - resourcequota.yaml
