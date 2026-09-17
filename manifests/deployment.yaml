@@ -24,6 +24,7 @@ spec:
         app.kubernetes.io/component: web
         app.kubernetes.io/part-of: hardened-nginx
     spec:
+      terminationGracePeriodSeconds: 15
       serviceAccountName: hardened-nginx
       automountServiceAccountToken: false
       affinity:
@@ -54,6 +55,10 @@ spec:
             capabilities:
               drop:
                 - ALL
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sleep", "5"]
           resources:
             requests:
               cpu: 50m
