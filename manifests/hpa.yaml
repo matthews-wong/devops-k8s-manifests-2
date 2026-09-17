@@ -1,0 +1,27 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hardened-nginx
+  namespace: hardened-nginx
+  labels:
+    app.kubernetes.io/name: hardened-nginx
+    app.kubernetes.io/instance: hardened-nginx
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: hardened-nginx
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: hardened-nginx
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 75
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
