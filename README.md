@@ -21,11 +21,15 @@ couple of minutes, tied together with a single `kustomization.yaml`.
 - `manifests/resourcequota.yaml` - namespace-wide compute and pod-count ceilings
 - `manifests/limitrange.yaml` - per-container defaults and min/max bounds
 - `manifests/kustomization.yaml` - ties the above into one applyable set
+- `overlays/dev` - lower replica/HPA ceiling for local or scratch clusters
+- `overlays/prod` - higher replica/HPA ceiling with a matching ResourceQuota
 
 ## Usage
 
 ```sh
-kubectl apply -k manifests/
+kubectl apply -k manifests/       # base, as shipped
+kubectl apply -k overlays/dev/    # single replica, HPA capped at 2
+kubectl apply -k overlays/prod/   # 3 replicas, HPA capped at 10, larger quota
 ```
 
 ## Design decisions
@@ -55,11 +59,15 @@ kubectl apply -k manifests/
 - **HPA min/max and the ResourceQuota agree with each other.** The quota is
   sized against the HPA's 6-replica ceiling plus rollout headroom, so
   autoscaling can't silently hit a quota wall it doesn't know about.
+- **Overlays patch replicas/HPA/quota together, never one alone.** Bumping an
+  overlay's HPA ceiling without also raising its ResourceQuota would just move
+  the "silent quota wall" problem from the base into the overlay.
 
 ## Validation
 
-This repo has no live cluster to apply against, so manifests are checked
-statically with [kubeconform](https://github.com/yannh/kubeconform) instead:
+This repo has no live cluster to apply against, so the base manifests and both
+overlays are checked statically with
+[kubeconform](https://github.com/yannh/kubeconform) instead:
 
 ```sh
 ./scripts/validate.sh
