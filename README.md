@@ -71,9 +71,14 @@ overlays are checked statically with
 
 ```sh
 ./scripts/validate.sh
+# or: make validate
 ```
 
 The script downloads a pinned, checksum-verified kubeconform release into
 `~/.cache` on first run and reuses it (or an already-installed `kubeconform`
 on `PATH`) afterwards. A GitHub Actions workflow runs the same script on
 every push and pull request against `main`.
+
+`make build`, `make build-dev`, and `make build-prod` print the rendered
+manifests for the base and each overlay (requires `kustomize` on `PATH`) -
+useful for eyeballing a patch before applying it.
