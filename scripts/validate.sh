@@ -43,3 +43,8 @@ echo "==> validating raw manifests"
 
 echo "==> validating kustomize build output"
 "${KUSTOMIZE}" build manifests/ | "${KUBECONFORM}" -strict -summary -
+
+for overlay in overlays/*/; do
+  echo "==> validating kustomize build output (${overlay})"
+  "${KUSTOMIZE}" build "${overlay}" | "${KUBECONFORM}" -strict -summary -
+done
