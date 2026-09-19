@@ -48,3 +48,6 @@ for overlay in overlays/*/; do
   echo "==> validating kustomize build output (${overlay})"
   "${KUSTOMIZE}" build "${overlay}" | "${KUBECONFORM}" -strict -summary -
 done
+
+echo "==> checking overlay replica/HPA floors"
+./scripts/check-overlay-floors.sh
