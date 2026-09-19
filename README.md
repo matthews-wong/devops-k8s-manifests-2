@@ -81,18 +81,20 @@ kubectl apply -k overlays/prod/     # 3 replicas, HPA capped at 10, larger quota
 
 ## Validation
 
-This repo has no live cluster to apply against, so the base manifests and both
-overlays are checked statically with
-[kubeconform](https://github.com/yannh/kubeconform) instead:
+This repo has no live cluster to apply against, so the base manifests and all
+three overlays are checked statically with
+[kubeconform](https://github.com/yannh/kubeconform), and the CI workflow
+itself is checked with
+[actionlint](https://github.com/rhysd/actionlint):
 
 ```sh
 ./scripts/validate.sh
 # or: make validate
 ```
 
-The script downloads a pinned, checksum-verified kubeconform release into
-`~/.cache` on first run and reuses it (or an already-installed `kubeconform`
-on `PATH`) afterwards. It finishes by running
+The script downloads pinned, checksum-verified kubeconform and actionlint
+releases into `~/.cache` on first run and reuses them (or already-installed
+copies on `PATH`) afterwards. It finishes by running
 `scripts/check-overlay-floors.sh` (also `make check-floors`), which renders
 all three overlays and fails if `dev`'s replica count or HPA bounds ever
 exceed `staging`'s, or `staging`'s exceed `prod`'s. A GitHub Actions workflow
