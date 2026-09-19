@@ -44,7 +44,9 @@ kubectl apply -k overlays/prod/     # 3 replicas, HPA capped at 10, larger quota
 - **`readOnlyRootFilesystem: true` plus three `emptyDir` mounts.** nginx still
   needs to write to `/tmp`, `/var/cache/nginx`, and `/var/run` even when it
   isn't touching its own binaries or config - those are exactly the paths
-  volumes are mounted over.
+  volumes are mounted over. Each carries a `sizeLimit` so a runaway write
+  (a buffered upload, a wedged cache) fills a bounded volume instead of the
+  node's disk.
 - **NetworkPolicy scopes ingress to the container port**, not to specific
   namespaces, since this manifest set doesn't know what else shares the
   cluster it's applied to; tighten the `from` selector per-environment.
