@@ -1,4 +1,4 @@
-.PHONY: validate build build-dev build-prod
+.PHONY: validate build build-dev build-staging build-prod
 
 validate:
 	./scripts/validate.sh
@@ -8,6 +8,9 @@ build:
 
 build-dev:
 	kustomize build overlays/dev/
+
+build-staging:
+	kustomize build overlays/staging/
 
 build-prod:
 	kustomize build overlays/prod/
