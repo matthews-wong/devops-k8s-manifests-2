@@ -15,6 +15,11 @@ KUSTOMIZE_SHA256="3669470b454d865c8184d6bce78df05e977c9aea31c30df3c669317d43bcc7
 KUSTOMIZE_CACHE_DIR="${HOME}/.cache/kustomize-${KUSTOMIZE_VERSION}"
 KUSTOMIZE_BIN="${KUSTOMIZE_CACHE_DIR}/kustomize"
 
+ACTIONLINT_VERSION="1.7.12"
+ACTIONLINT_SHA256="8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+ACTIONLINT_CACHE_DIR="${HOME}/.cache/actionlint-${ACTIONLINT_VERSION}"
+ACTIONLINT_BIN="${ACTIONLINT_CACHE_DIR}/actionlint"
+
 if ! command -v kubeconform >/dev/null 2>&1 && [ ! -x "${KUBECONFORM_BIN}" ]; then
   mkdir -p "${KUBECONFORM_CACHE_DIR}"
   archive="$(mktemp)"
@@ -35,8 +40,22 @@ if ! command -v kustomize >/dev/null 2>&1 && [ ! -x "${KUSTOMIZE_BIN}" ]; then
   rm -f "${archive}"
 fi
 
+if ! command -v actionlint >/dev/null 2>&1 && [ ! -x "${ACTIONLINT_BIN}" ]; then
+  mkdir -p "${ACTIONLINT_CACHE_DIR}"
+  archive="$(mktemp)"
+  curl -fsSL -o "${archive}" \
+    "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+  echo "${ACTIONLINT_SHA256}  ${archive}" | sha256sum -c -
+  tar -xzf "${archive}" -C "${ACTIONLINT_CACHE_DIR}" actionlint
+  rm -f "${archive}"
+fi
+
 KUBECONFORM="$(command -v kubeconform || echo "${KUBECONFORM_BIN}")"
 KUSTOMIZE="$(command -v kustomize || echo "${KUSTOMIZE_BIN}")"
+ACTIONLINT="$(command -v actionlint || echo "${ACTIONLINT_BIN}")"
+
+echo "==> linting the CI workflow"
+"${ACTIONLINT}" .github/workflows/*.yaml
 
 echo "==> validating raw manifests"
 "${KUBECONFORM}" -strict -summary -ignore-filename-pattern 'kustomization\.yaml$' manifests/*.yaml
