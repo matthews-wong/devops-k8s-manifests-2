@@ -22,14 +22,16 @@ couple of minutes, tied together with a single `kustomization.yaml`.
 - `manifests/limitrange.yaml` - per-container defaults and min/max bounds
 - `manifests/kustomization.yaml` - ties the above into one applyable set
 - `overlays/dev` - lower replica/HPA ceiling for local or scratch clusters
+- `overlays/staging` - a mid-sized replica/HPA ceiling, still inside the base ResourceQuota
 - `overlays/prod` - higher replica/HPA ceiling with a matching ResourceQuota
 
 ## Usage
 
 ```sh
-kubectl apply -k manifests/       # base, as shipped
-kubectl apply -k overlays/dev/    # single replica, HPA capped at 2
-kubectl apply -k overlays/prod/   # 3 replicas, HPA capped at 10, larger quota
+kubectl apply -k manifests/         # base, as shipped
+kubectl apply -k overlays/dev/      # single replica, HPA capped at 2
+kubectl apply -k overlays/staging/  # 2 replicas, HPA capped at 4
+kubectl apply -k overlays/prod/     # 3 replicas, HPA capped at 10, larger quota
 ```
 
 ## Design decisions
@@ -61,7 +63,10 @@ kubectl apply -k overlays/prod/   # 3 replicas, HPA capped at 10, larger quota
   autoscaling can't silently hit a quota wall it doesn't know about.
 - **Overlays patch replicas/HPA/quota together, never one alone.** Bumping an
   overlay's HPA ceiling without also raising its ResourceQuota would just move
-  the "silent quota wall" problem from the base into the overlay.
+  the "silent quota wall" problem from the base into the overlay. `staging`
+  only needs to patch replicas/HPA because its 4-replica ceiling still fits
+  inside the base ResourceQuota; `prod` patches the quota too because its
+  ceiling doesn't.
 
 ## Validation
 
