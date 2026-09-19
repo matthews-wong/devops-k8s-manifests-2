@@ -96,11 +96,14 @@ spec:
               readOnly: true
       volumes:
         - name: tmp
-          emptyDir: {}
+          emptyDir:
+            sizeLimit: 32Mi
         - name: cache
-          emptyDir: {}
+          emptyDir:
+            sizeLimit: 32Mi
         - name: run
-          emptyDir: {}
+          emptyDir:
+            sizeLimit: 4Mi
         - name: html
           configMap:
             name: hardened-nginx-html
