@@ -1,5 +1,7 @@
 # hardened-nginx-manifests
 
+[![validate](https://github.com/matthews-wong/devops-k8s-manifests-2/actions/workflows/validate.yaml/badge.svg)](https://github.com/matthews-wong/devops-k8s-manifests-2/actions/workflows/validate.yaml)
+
 Plain Kubernetes manifests for a small static-content nginx frontend, written
 the way I'd want to hand them to a teammate: pinned image, resource limits,
 health probes, and a restrictive `securityContext` from the start rather than
