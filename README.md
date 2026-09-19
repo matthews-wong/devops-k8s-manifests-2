@@ -81,8 +81,11 @@ overlays are checked statically with
 
 The script downloads a pinned, checksum-verified kubeconform release into
 `~/.cache` on first run and reuses it (or an already-installed `kubeconform`
-on `PATH`) afterwards. A GitHub Actions workflow runs the same script on
-every push and pull request against `main`.
+on `PATH`) afterwards. It finishes by running
+`scripts/check-overlay-floors.sh` (also `make check-floors`), which renders
+all three overlays and fails if `dev`'s replica count or HPA bounds ever
+exceed `staging`'s, or `staging`'s exceed `prod`'s. A GitHub Actions workflow
+runs the same script on every push and pull request against `main`.
 
 `make build`, `make build-dev`, and `make build-prod` print the rendered
 manifests for the base and each overlay (requires `kustomize` on `PATH`) -

@@ -1,7 +1,10 @@
-.PHONY: validate build build-dev build-staging build-prod
+.PHONY: validate check-floors build build-dev build-staging build-prod
 
 validate:
 	./scripts/validate.sh
+
+check-floors:
+	./scripts/check-overlay-floors.sh
 
 build:
 	kustomize build manifests/
