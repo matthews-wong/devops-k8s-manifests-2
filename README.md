@@ -58,6 +58,9 @@ kubectl apply -k overlays/prod/     # 3 replicas, HPA capped at 10, larger quota
 - **Anti-affinity is `preferred`, not `required`.** A hard rule would refuse
   to schedule a second replica on a single-node dev/test cluster; the soft
   rule still asks the scheduler to spread when it can.
+- **`revisionHistoryLimit: 3`.** The default keeps every old ReplicaSet
+  forever; three is enough to roll back a bad deploy without the namespace
+  quietly accumulating one ReplicaSet per release.
 - **`maxUnavailable: 0` on the rollout strategy.** Even the single-replica
   `dev` overlay should never drop to zero ready pods mid-rollout; `maxSurge: 1`
   pays for that with one extra pod during the update instead of a gap in
